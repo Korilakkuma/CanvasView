@@ -6,7 +6,7 @@
  * Released under the MIT license
  */
 
-package com.example.canvas;
+package com.graphics;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;

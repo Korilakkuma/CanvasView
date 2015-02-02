@@ -16,7 +16,7 @@ For example,
   
     ....
 
-    <com.example.express.CanvasView
+    <com.graphics.CanvasView
         android:id="@+id/canvas"
         android:layout_width="280dp"
         android:layout_height="280dp"
@@ -28,7 +28,7 @@ For example,
   
     ....
 
-    package com.example.express;
+    package com.graphics;
 
     import android.os.Bundle;
     import android.app.Activity;
