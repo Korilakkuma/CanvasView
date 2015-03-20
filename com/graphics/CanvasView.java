@@ -1,7 +1,6 @@
 /**
  * CanvasView.java
  * 
- *
  * Copyright 2014@Tomohiro IKEDA
  * Released under the MIT license
  */
@@ -19,31 +18,30 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.PorterDuff;
+// import android.graphics.PorterDuffXfermode;
+// import android.graphics.PorterDuff;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
-import android.util.Log;
-import android.widget.Toast;
+// import android.util.Log;
+// import android.widget.Toast;
 
 /**
  * This class defines fields and methods for drawing.
- *
  */
 public class CanvasView extends View {
 
-    //Enumeration for Mode
+    // Enumeration for Mode
     public enum Mode {
         DRAW,
         TEXT,
         ERASER;
     }
 
-    //Enumeration for Drawer
+    // Enumeration for Drawer
     public enum Drawer {
         PEN,
         LINE,
@@ -61,15 +59,15 @@ public class CanvasView extends View {
     private List<Path>  pathLists  = new ArrayList<Path>();
     private List<Paint> paintLists = new ArrayList<Paint>();
 
-    //for Undo, Redo
+    // for Undo, Redo
     private int historyPointer = 0;
 
-    //Flags
+    // Flags
     private Mode mode       = Mode.DRAW;
     private Drawer drawer   = Drawer.PEN;
     private boolean isDown  = false;
 
-    //for Paint
+    // for Paint
     private Paint.Style paintStyle   = Paint.Style.STROKE;
     private int paintStrokeColor     = Color.BLACK;
     private int paintFillColor       = Color.BLACK;
@@ -78,16 +76,16 @@ public class CanvasView extends View {
     private float blur               = 0F;
     private Paint.Cap lineCap        = Paint.Cap.ROUND;
 
-    //for Text
+    // for Text
     private String text           = "";
     private Typeface fontFamily   = Typeface.DEFAULT;
     private float fontSize        = 32F;
-    private Paint.Align textAlign = Paint.Align.RIGHT;  //fixed
+    private Paint.Align textAlign = Paint.Align.RIGHT;  // fixed
     private Paint textPaint       = new Paint();
     private float textX           = 0F;
     private float textY           = 0F;
 
-    //for Drawer
+    // for Drawer
     private float startX   = 0F;
     private float startY   = 0F;
     private float controlX = 0F;
@@ -127,6 +125,7 @@ public class CanvasView extends View {
     }
 
     /**
+     * Common initialization.
      * 
      * @param context
      */
@@ -153,9 +152,9 @@ public class CanvasView extends View {
         paint.setStyle(this.paintStyle);
         paint.setStrokeWidth(this.paintStrokeWidth);
         paint.setStrokeCap(this.lineCap);
-        paint.setStrokeJoin(Paint.Join.MITER);  //fixed
+        paint.setStrokeJoin(Paint.Join.MITER);  // fixed
 
-        //for Text
+        // for Text
         if (this.mode == Mode.TEXT) {
             paint.setTypeface(this.fontFamily);
             paint.setTextSize(this.fontSize);
@@ -167,8 +166,8 @@ public class CanvasView extends View {
             paint.setColor(this.paintStrokeColor);
             paint.setShadowLayer(this.blur, 0F, 0F, this.paintStrokeColor);
         } else {
-            //paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-            //paint.setARGB(0, 0, 0, 0);
+            // paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+            // paint.setARGB(0, 0, 0, 0);
             paint.setColor(Color.WHITE);
             paint.setShadowLayer(this.blur, 0F, 0F, Color.WHITE);
         }
@@ -189,7 +188,7 @@ public class CanvasView extends View {
     private Path createPath(MotionEvent event) {
         Path path = new Path();
 
-        //Save for ACTION_MOVE
+        // Save for ACTION_MOVE
         this.startX = event.getX();
         this.startY = event.getY();
 
@@ -211,7 +210,7 @@ public class CanvasView extends View {
             this.paintLists.add(this.createPaint());
             this.historyPointer++;
         } else {
-            //On the way of Undo or Redo
+            // On the way of Undo or Redo
             this.pathLists.set(this.historyPointer, path);
             this.paintLists.set(this.historyPointer, this.createPaint());
             this.historyPointer++;
@@ -234,7 +233,7 @@ public class CanvasView extends View {
 
     /**
      * This method draws text.
-     *  
+     * 
      * @param canvas the instance of Canvas
      */
     private void drawText(Canvas canvas) {
@@ -254,11 +253,11 @@ public class CanvasView extends View {
 
         Paint paintForMeasureText = new Paint();
 
-        //Line break automatically
+        // Line break automatically
         float textLength   = paintForMeasureText.measureText(this.text);
         float lengthOfChar = textLength / (float)this.text.length();
-        float restWidth    = this.canvas.getWidth() - textX;  //text-align : right
-        int numChars       = (lengthOfChar <= 0) ? 1 : (int)Math.floor((double)(restWidth / lengthOfChar));  //The number of characters at 1 line
+        float restWidth    = this.canvas.getWidth() - textX;  // text-align : right
+        int numChars       = (lengthOfChar <= 0) ? 1 : (int)Math.floor((double)(restWidth / lengthOfChar));  // The number of characters at 1 line
         int modNumChars    = (numChars < 1) ? 1 : numChars;
         float y            = textY;
 
@@ -287,16 +286,16 @@ public class CanvasView extends View {
             case DRAW   :
             case ERASER :
                 if ((this.drawer != Drawer.QUADRATIC_BEZIER) && (this.drawer != Drawer.QUBIC_BEZIER)) {
-                    //Oherwise
+                    // Oherwise
                     this.updateHistory(this.createPath(event));
                     this.isDown = true;
                 } else {
-                    //Bezier
+                    // Bezier
                     if ((this.startX == 0F) && (this.startY == 0F)) {
-                        //The 1st tap
+                        // The 1st tap
                         this.updateHistory(this.createPath(event));
                     } else {
-                        //The 2nd tap
+                        // The 2nd tap
                         this.controlX = event.getX();
                         this.controlY = event.getY();
 
@@ -410,7 +409,7 @@ public class CanvasView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        //Before "drawPath"
+        // Before "drawPath"
         canvas.drawColor(Color.WHITE);
 
         if (this.bitmap != null) {
@@ -451,7 +450,7 @@ public class CanvasView extends View {
                 break;
         }
 
-        //Re draw
+        // Re draw
         this.invalidate();
 
         return true;
@@ -533,7 +532,7 @@ public class CanvasView extends View {
     public void clear() {
         Path path = new Path();
         path.moveTo(0F, 0F);
-        path.addRect(0F,  0F, 1000F, 1000F, Path.Direction.CCW);
+        path.addRect(0F, 0F, 1000F, 1000F, Path.Direction.CCW);
         path.close();
 
         Paint paint = new Paint();
@@ -545,7 +544,7 @@ public class CanvasView extends View {
             this.paintLists.add(paint);
             this.historyPointer++;
         } else {
-            //On the way of Undo or Redo
+            // On the way of Undo or Redo
             this.pathLists.set(this.historyPointer, path);
             this.paintLists.set(this.historyPointer, paint);
             this.historyPointer++;
@@ -558,7 +557,7 @@ public class CanvasView extends View {
 
         this.text = "";
 
-        //Clear
+        // Clear
         this.invalidate();
     }
 
@@ -619,7 +618,7 @@ public class CanvasView extends View {
     /**
      * This method is getter for fill color.
      * But, current Android API cannot set fill color (?).
-     *  
+     * 
      * @return
      */
     public int getPaintFillColor() {
@@ -629,7 +628,7 @@ public class CanvasView extends View {
     /**
      * This method is setter for fill color.
      * But, current Android API cannot set fill color (?).
-     *  
+     * 
      * @param color
      */
     public void setPaintFillColor(int color) {
@@ -838,4 +837,5 @@ public class CanvasView extends View {
     public byte[] getBitmapAsByteArray() {
         return this.getBitmapAsByteArray(CompressFormat.PNG, 100);
     }
+
 }
