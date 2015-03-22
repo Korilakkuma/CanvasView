@@ -24,8 +24,8 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.View;
+import android.view.MotionEvent;
 // import android.util.Log;
 // import android.widget.Toast;
 
@@ -59,22 +59,25 @@ public class CanvasView extends View {
     private List<Path>  pathLists  = new ArrayList<Path>();
     private List<Paint> paintLists = new ArrayList<Paint>();
 
+    // for Eraser
+    private int baseColor = Color.WHITE;
+
     // for Undo, Redo
     private int historyPointer = 0;
 
     // Flags
-    private Mode mode       = Mode.DRAW;
-    private Drawer drawer   = Drawer.PEN;
-    private boolean isDown  = false;
+    private Mode mode      = Mode.DRAW;
+    private Drawer drawer  = Drawer.PEN;
+    private boolean isDown = false;
 
     // for Paint
-    private Paint.Style paintStyle   = Paint.Style.STROKE;
-    private int paintStrokeColor     = Color.BLACK;
-    private int paintFillColor       = Color.BLACK;
-    private float paintStrokeWidth   = 3F;
-    private int opacity              = 255;
-    private float blur               = 0F;
-    private Paint.Cap lineCap        = Paint.Cap.ROUND;
+    private Paint.Style paintStyle = Paint.Style.STROKE;
+    private int paintStrokeColor   = Color.BLACK;
+    private int paintFillColor     = Color.BLACK;
+    private float paintStrokeWidth = 3F;
+    private int opacity            = 255;
+    private float blur             = 0F;
+    private Paint.Cap lineCap      = Paint.Cap.ROUND;
 
     // for Text
     private String text           = "";
@@ -162,14 +165,16 @@ public class CanvasView extends View {
             paint.setStrokeWidth(0F);
         }
 
-        if (this.mode != Mode.ERASER) {
-            paint.setColor(this.paintStrokeColor);
-            paint.setShadowLayer(this.blur, 0F, 0F, this.paintStrokeColor);
-        } else {
+        if (this.mode == Mode.ERASER) {
+            // Eraser
             // paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
             // paint.setARGB(0, 0, 0, 0);
-            paint.setColor(Color.WHITE);
-            paint.setShadowLayer(this.blur, 0F, 0F, Color.WHITE);
+            paint.setColor(this.baseColor);
+            paint.setShadowLayer(this.blur, 0F, 0F, this.baseColor);
+        } else {
+            // Otherwise
+            paint.setColor(this.paintStrokeColor);
+            paint.setShadowLayer(this.blur, 0F, 0F, this.paintStrokeColor);
         }
 
         paint.setAlpha(this.opacity);
@@ -410,7 +415,7 @@ public class CanvasView extends View {
         super.onDraw(canvas);
 
         // Before "drawPath"
-        canvas.drawColor(Color.WHITE);
+        canvas.drawColor(this.baseColor);
 
         if (this.bitmap != null) {
             canvas.drawBitmap(this.bitmap, 0F, 0F, new Paint());
@@ -559,6 +564,24 @@ public class CanvasView extends View {
 
         // Clear
         this.invalidate();
+    }
+
+    /**
+     * This method is getter for canvas background color
+     * 
+     * @return
+     */
+    public int getBaseColor() {
+        return this.baseColor;
+    }
+
+    /**
+     * This method is setter for canvas background color
+     * 
+     * @param color
+     */
+    public void setBaseColor(int color) {
+        this.baseColor = color;
     }
 
     /**
