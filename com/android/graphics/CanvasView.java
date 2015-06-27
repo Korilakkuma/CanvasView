@@ -5,7 +5,7 @@
  * Released under the MIT license
  */
 
-package com.graphics;
+package com.android.graphics;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
