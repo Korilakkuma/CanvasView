@@ -169,6 +169,7 @@ public class CanvasView extends View {
             // Eraser
             // paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
             // paint.setARGB(0, 0, 0, 0);
+
             paint.setColor(this.baseColor);
             paint.setShadowLayer(this.blur, 0F, 0F, this.baseColor);
         } else {
@@ -673,7 +674,11 @@ public class CanvasView extends View {
      * @param width
      */
     public void setPaintStrokeWidth(float width) {
-        this.paintStrokeWidth = width;
+        if (width >= 0) {
+            this.paintStrokeWidth = width;
+        } else {
+            this.paintStrokeWidth = 3F;
+        }
     }
 
     /**
@@ -758,6 +763,8 @@ public class CanvasView extends View {
     public void setFontSize(float size) {
         if (size >= 0F) {
             this.fontSize = size;
+        } else {
+            this.fontSize = 32F;
         }
     }
 
