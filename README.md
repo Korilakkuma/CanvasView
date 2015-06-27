@@ -16,7 +16,7 @@ For example,
   
     ....
 
-    <com.graphics.CanvasView
+    <com.android.graphics.CanvasView
         android:id="@+id/canvas"
         android:layout_width="280dp"
         android:layout_height="280dp"
