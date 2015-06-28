@@ -18,8 +18,8 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-// import android.graphics.PorterDuffXfermode;
-// import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.PorterDuff;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
@@ -167,18 +167,17 @@ public class CanvasView extends View {
 
         if (this.mode == Mode.ERASER) {
             // Eraser
-            // paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-            // paint.setARGB(0, 0, 0, 0);
+            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+            paint.setARGB(0, 0, 0, 0);
 
-            paint.setColor(this.baseColor);
-            paint.setShadowLayer(this.blur, 0F, 0F, this.baseColor);
+            // paint.setColor(this.baseColor);
+            // paint.setShadowLayer(this.blur, 0F, 0F, this.baseColor);
         } else {
             // Otherwise
             paint.setColor(this.paintStrokeColor);
             paint.setShadowLayer(this.blur, 0F, 0F, this.paintStrokeColor);
+            paint.setAlpha(this.opacity);
         }
-
-        paint.setAlpha(this.opacity);
 
         return paint;
     }
