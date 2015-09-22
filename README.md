@@ -212,3 +212,8 @@ From byte array of bitmap
 
     this.canvas.drawBitmap(bytes);
   
+## License
+  
+Copyright (c) 2014 Tomohiro IKEDA (Korilakkuma)  
+Released under the MIT license
+  
