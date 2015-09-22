@@ -1,4 +1,4 @@
-CanvasView.java
+CanvasView
 =========
   
 Android Application Library
@@ -14,7 +14,7 @@ For example,
   
     activity_draw.xml
   
-    ....
+    ...
 
     <com.android.graphics.CanvasView
         android:id="@+id/canvas"
@@ -22,11 +22,11 @@ For example,
         android:layout_height="280dp"
         android:layout_gravity="center_horizontal" />
 
-    ....
+    ...
   
     DrawActivity.java
   
-    ....
+    // ...
 
     package com.graphics;
 
@@ -46,7 +46,7 @@ For example,
             this.canvas = (CanvasView)this.findViewById(R.id.canvas);
         }
 
-        // ....
+        // ...
     }
   
 Creating XML and Activity enables to draw canvas.
@@ -194,7 +194,7 @@ or,
   
 In the case of using the specific bitmap,
   
-    // ....
+    // ...
 
     byte[] bytes = CanvasView.getBitmapAsByteArray(bitmap, CompressFormat.PNG, 100);
   
@@ -202,13 +202,13 @@ In the case of using the specific bitmap,
   
 From Bitmap,
   
-    // ....
+    // ...
 
     this.canvas.drawBitmap(bitmap);
-  ，
+  
 From byte array of bitmap
   
-    // ....
+    // ...
 
     this.canvas.drawBitmap(bytes);
   
