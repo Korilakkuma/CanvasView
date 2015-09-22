@@ -1,7 +1,7 @@
 /**
  * CanvasView.java
- * 
- * Copyright 2014@Tomohiro IKEDA
+ *
+ * Copyright (c) 2014 Tomohiro IKEDA (Korilakkuma)
  * Released under the MIT license
  */
 
