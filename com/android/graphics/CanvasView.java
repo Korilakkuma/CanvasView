@@ -59,6 +59,8 @@ public class CanvasView extends View {
     private List<Path>  pathLists  = new ArrayList<Path>();
     private List<Paint> paintLists = new ArrayList<Paint>();
 
+    private final Paint emptyPaint = new Paint();
+
     // for Eraser
     private int baseColor = Color.WHITE;
 
@@ -418,7 +420,7 @@ public class CanvasView extends View {
         canvas.drawColor(this.baseColor);
 
         if (this.bitmap != null) {
-            canvas.drawBitmap(this.bitmap, 0F, 0F, new Paint());
+            canvas.drawBitmap(this.bitmap, 0F, 0F, emptyPaint);
         }
 
         for (int i = 0; i < this.historyPointer; i++) {
