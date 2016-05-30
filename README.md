@@ -12,7 +12,7 @@ This library defines API for drawing application.
 Application creates layout XML and Activity for using this library.  
 For example,  
   
-    activity_draw.xml
+activity_draw.xml
   
     ...
 
@@ -24,17 +24,17 @@ For example,
 
     ...
   
-    DrawActivity.java
+DrawActivity.java
   
     // ...
 
-    package com.graphics;
-
+    import android.support.v7.app.AppCompatActivity;
     import android.os.Bundle;
-    import android.app.Activity;
-    import android.view.Menu;
 
-    public class DrawActivity extends Activity {
+    import com.android.graphics.CanvasView;
+
+    public class DrawActivity extends AppCompatActivity {
+
         private CanvasView canvas = null;
 
         @Override
@@ -42,14 +42,13 @@ For example,
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_draw);
 
-            // Create the instance of CanvasView
             this.canvas = (CanvasView)this.findViewById(R.id.canvas);
         }
 
         // ...
     }
   
-Creating XML and Activity enables to draw canvas.
+Creating XML and Activity enables to draw on canvas.
   
 ## API
   
