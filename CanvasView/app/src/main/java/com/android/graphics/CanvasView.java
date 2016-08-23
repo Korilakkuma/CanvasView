@@ -1,31 +1,29 @@
 /**
  * CanvasView.java
- *
+ * <p/>
  * Copyright (c) 2014 Tomohiro IKEDA (Korilakkuma)
  * Released under the MIT license
  */
 
 package com.android.graphics;
 
-import java.io.ByteArrayOutputStream;
-import java.util.List;
-import java.util.ArrayList;
-
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.PorterDuff;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
-import android.graphics.BitmapFactory;
 import android.util.AttributeSet;
-import android.view.View;
 import android.view.MotionEvent;
+import android.view.View;
+
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 // import android.util.Log;
 // import android.widget.Toast;
 
@@ -38,7 +36,7 @@ public class CanvasView extends View {
     public enum Mode {
         DRAW,
         TEXT,
-        ERASER;
+        ERASER
     }
 
     // Enumeration for Drawer
@@ -49,48 +47,48 @@ public class CanvasView extends View {
         CIRCLE,
         ELLIPSE,
         QUADRATIC_BEZIER,
-        QUBIC_BEZIER;
+        QUBIC_BEZIER
     }
 
     private Context context = null;
-    private Canvas canvas   = null;
-    private Bitmap bitmap   = null;
+    private Canvas canvas = null;
+    private Bitmap bitmap = null;
 
-    private List<Path>  pathLists  = new ArrayList<Path>();
-    private List<Paint> paintLists = new ArrayList<Paint>();
+    private List<Path> pathLists = new ArrayList<>();
+    private List<Paint> paintLists = new ArrayList<>();
 
     // for Eraser
-    private int baseColor = Color.WHITE;
+    private int canvasBackgroundColor = Color.WHITE;
 
     // for Undo, Redo
     private int historyPointer = 0;
 
     // Flags
-    private Mode mode      = Mode.DRAW;
-    private Drawer drawer  = Drawer.PEN;
+    private Mode mode = Mode.DRAW;
+    private Drawer drawer = Drawer.PEN;
     private boolean isDown = false;
 
     // for Paint
     private Paint.Style paintStyle = Paint.Style.STROKE;
-    private int paintStrokeColor   = Color.BLACK;
-    private int paintFillColor     = Color.BLACK;
-    private float paintStrokeWidth = 3F;
-    private int opacity            = 255;
-    private float blur             = 0F;
-    private Paint.Cap lineCap      = Paint.Cap.ROUND;
+    private int paintStrokeColor = Color.BLACK;
+    private int paintFillColor = Color.BLACK;
+    private float paintStrokeWidth = 5F;
+    private int opacity = 255;
+    private float blur = 0F;
+    private Paint.Cap lineCap = Paint.Cap.ROUND;
 
     // for Text
-    private String text           = "";
-    private Typeface fontFamily   = Typeface.DEFAULT;
-    private float fontSize        = 32F;
+    private String text = "";
+    private Typeface fontFamily = Typeface.DEFAULT;
+    private float fontSize = 32F;
     private Paint.Align textAlign = Paint.Align.RIGHT;  // fixed
-    private Paint textPaint       = new Paint();
-    private float textX           = 0F;
-    private float textY           = 0F;
+    private Paint textPaint = new Paint();
+    private float textX = 0F;
+    private float textY = 0F;
 
     // for Drawer
-    private float startX   = 0F;
-    private float startY   = 0F;
+    private float startX = 0F;
+    private float startY = 0F;
     private float controlX = 0F;
     private float controlY = 0F;
 
@@ -156,6 +154,7 @@ public class CanvasView extends View {
         paint.setStrokeWidth(this.paintStrokeWidth);
         paint.setStrokeCap(this.lineCap);
         paint.setStrokeJoin(Paint.Join.MITER);  // fixed
+        paint.setColor(this.paintStrokeColor);
 
         // for Text
         if (this.mode == Mode.TEXT) {
@@ -166,19 +165,11 @@ public class CanvasView extends View {
         }
 
         if (this.mode == Mode.ERASER) {
-            // Eraser
-            paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-            paint.setARGB(0, 0, 0, 0);
-
-            // paint.setColor(this.baseColor);
-            // paint.setShadowLayer(this.blur, 0F, 0F, this.baseColor);
-        } else {
-            // Otherwise
-            paint.setColor(this.paintStrokeColor);
-            paint.setShadowLayer(this.blur, 0F, 0F, this.paintStrokeColor);
-            paint.setAlpha(this.opacity);
+            paint.setColor(canvasBackgroundColor); // Eraser
         }
 
+        paint.setShadowLayer(this.blur, 0F, 0F, this.paintStrokeColor);
+        paint.setAlpha(this.opacity);
         return paint;
     }
 
@@ -207,7 +198,6 @@ public class CanvasView extends View {
      * "Undo" and "Redo" are enabled by this method.
      *
      * @param path the instance of Path
-     * @param paint the instance of Paint
      */
     private void updateHistory(Path path) {
         if (this.historyPointer == this.pathLists.size()) {
@@ -259,12 +249,12 @@ public class CanvasView extends View {
         Paint paintForMeasureText = new Paint();
 
         // Line break automatically
-        float textLength   = paintForMeasureText.measureText(this.text);
-        float lengthOfChar = textLength / (float)this.text.length();
-        float restWidth    = this.canvas.getWidth() - textX;  // text-align : right
-        int numChars       = (lengthOfChar <= 0) ? 1 : (int)Math.floor((double)(restWidth / lengthOfChar));  // The number of characters at 1 line
-        int modNumChars    = (numChars < 1) ? 1 : numChars;
-        float y            = textY;
+        float textLength = paintForMeasureText.measureText(this.text);
+        float lengthOfChar = textLength / (float) this.text.length();
+        float restWidth = this.canvas.getWidth() - textX;  // text-align : right
+        int numChars = (lengthOfChar <= 0) ? 1 : (int) Math.floor((double) (restWidth / lengthOfChar));  // The number of characters at 1 line
+        int modNumChars = (numChars < 1) ? 1 : numChars;
+        float y = textY;
 
         for (int i = 0, len = this.text.length(); i < len; i += modNumChars) {
             String substring = "";
@@ -288,8 +278,8 @@ public class CanvasView extends View {
      */
     private void onActionDown(MotionEvent event) {
         switch (this.mode) {
-            case DRAW   :
-            case ERASER :
+            case DRAW:
+            case ERASER:
                 if ((this.drawer != Drawer.QUADRATIC_BEZIER) && (this.drawer != Drawer.QUBIC_BEZIER)) {
                     // Oherwise
                     this.updateHistory(this.createPath(event));
@@ -309,12 +299,12 @@ public class CanvasView extends View {
                 }
 
                 break;
-            case TEXT   :
+            case TEXT:
                 this.startX = event.getX();
                 this.startY = event.getY();
 
                 break;
-            default :
+            default:
                 break;
         }
     }
@@ -329,8 +319,8 @@ public class CanvasView extends View {
         float y = event.getY();
 
         switch (this.mode) {
-            case DRAW   :
-            case ERASER :
+            case DRAW:
+            case ERASER:
 
                 if ((this.drawer != Drawer.QUADRATIC_BEZIER) && (this.drawer != Drawer.QUBIC_BEZIER)) {
                     if (!isDown) {
@@ -340,33 +330,33 @@ public class CanvasView extends View {
                     Path path = this.getCurrentPath();
 
                     switch (this.drawer) {
-                        case PEN :
+                        case PEN:
                             path.lineTo(x, y);
                             break;
-                        case LINE :
+                        case LINE:
                             path.reset();
                             path.moveTo(this.startX, this.startY);
                             path.lineTo(x, y);
                             break;
-                        case RECTANGLE :
+                        case RECTANGLE:
                             path.reset();
                             path.addRect(this.startX, this.startY, x, y, Path.Direction.CCW);
                             break;
-                        case CIRCLE :
-                            double distanceX = Math.abs((double)(this.startX - x));
-                            double distanceY = Math.abs((double)(this.startX - y));
-                            double radius    = Math.sqrt(Math.pow(distanceX, 2.0) + Math.pow(distanceY, 2.0));
+                        case CIRCLE:
+                            double distanceX = Math.abs((double) (this.startX - x));
+                            double distanceY = Math.abs((double) (this.startX - y));
+                            double radius = Math.sqrt(Math.pow(distanceX, 2.0) + Math.pow(distanceY, 2.0));
 
                             path.reset();
-                            path.addCircle(this.startX, this.startY, (float)radius, Path.Direction.CCW);
+                            path.addCircle(this.startX, this.startY, (float) radius, Path.Direction.CCW);
                             break;
-                        case ELLIPSE :
+                        case ELLIPSE:
                             RectF rect = new RectF(this.startX, this.startY, x, y);
 
                             path.reset();
                             path.addOval(rect, Path.Direction.CCW);
                             break;
-                        default :
+                        default:
                             break;
                     }
                 } else {
@@ -382,12 +372,12 @@ public class CanvasView extends View {
                 }
 
                 break;
-            case TEXT :
+            case TEXT:
                 this.startX = x;
                 this.startY = y;
 
                 break;
-            default :
+            default:
                 break;
         }
     }
@@ -415,16 +405,15 @@ public class CanvasView extends View {
         super.onDraw(canvas);
 
         // Before "drawPath"
-        canvas.drawColor(this.baseColor);
+        canvas.drawColor(this.canvasBackgroundColor);
 
         if (this.bitmap != null) {
             canvas.drawBitmap(this.bitmap, 0F, 0F, new Paint());
         }
 
         for (int i = 0; i < this.historyPointer; i++) {
-            Path path   = this.pathLists.get(i);
+            Path path = this.pathLists.get(i);
             Paint paint = this.paintLists.get(i);
-
             canvas.drawPath(path, paint);
         }
 
@@ -445,13 +434,13 @@ public class CanvasView extends View {
             case MotionEvent.ACTION_DOWN:
                 this.onActionDown(event);
                 break;
-            case MotionEvent.ACTION_MOVE :
+            case MotionEvent.ACTION_MOVE:
                 this.onActionMove(event);
                 break;
-            case MotionEvent.ACTION_UP :
+            case MotionEvent.ACTION_UP:
                 this.onActionUp(event);
                 break;
-            default :
+            default:
                 break;
         }
 
@@ -571,8 +560,8 @@ public class CanvasView extends View {
      *
      * @return
      */
-    public int getBaseColor() {
-        return this.baseColor;
+    public int getCanvasBackgroundColor() {
+        return this.canvasBackgroundColor;
     }
 
     /**
@@ -580,8 +569,8 @@ public class CanvasView extends View {
      *
      * @param color
      */
-    public void setBaseColor(int color) {
-        this.baseColor = color;
+    public void setCanvasBackgroundColor(int color) {
+        this.canvasBackgroundColor = color;
     }
 
     /**
@@ -646,7 +635,9 @@ public class CanvasView extends View {
      */
     public int getPaintFillColor() {
         return this.paintFillColor;
-    };
+    }
+
+    ;
 
     /**
      * This method is setter for fill color.
@@ -699,7 +690,7 @@ public class CanvasView extends View {
         if ((opacity >= 0) && (opacity <= 255)) {
             this.opacity = opacity;
         } else {
-            this.opacity= 255;
+            this.opacity = 255;
         }
     }
 
