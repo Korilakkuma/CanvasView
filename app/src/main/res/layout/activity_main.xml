@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <com.android.graphics.CanvasView
+                android:id="@+id/canvas"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                />
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Drawer trype"/>
+
+                <Button
+                    android:id="@+id/button_pen"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Pen"/>
+
+                <Button
+                    android:id="@+id/button_line"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Line"/>
+
+                <Button
+                    android:id="@+id/button_rectangle"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Rectangle"/>
+
+                <Button
+                    android:id="@+id/button_circle"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Circle"/>
+
+                <Button
+                    android:id="@+id/button_ellipse"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Ellipse"/>
+
+                <Button
+                    android:id="@+id/button_quadratic"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Quadratic"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="Drawer mode"/>
+
+                <Button
+                    android:id="@+id/button_draw"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Draw"/>
+
+                <Button
+                    android:id="@+id/button_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Text"/>
+
+                <Button
+                    android:id="@+id/button_erase"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Erase"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="Drawer trype"/>
+
+                <Button
+                    android:id="@+id/button_undo"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Undo"/>
+
+                <Button
+                    android:id="@+id/button_redo"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Redo"/>
+
+                <Button
+                    android:id="@+id/button_clear"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="Clear"/>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</LinearLayout>
