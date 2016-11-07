@@ -6,7 +6,6 @@
  */
 
 package com.android.graphics;
-
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.ArrayList;
@@ -26,12 +25,7 @@ import android.graphics.BitmapFactory;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.MotionEvent;
-// import android.util.Log;
-// import android.widget.Toast;
 
-/**
- * This class defines fields and methods for drawing.
- */
 public class CanvasView extends View {
 
     // Enumeration for Mode
@@ -45,6 +39,7 @@ public class CanvasView extends View {
     public enum Drawer {
         PEN,
         LINE,
+        ARROW,
         RECTANGLE,
         CIRCLE,
         ELLIPSE,
@@ -58,8 +53,6 @@ public class CanvasView extends View {
 
     private List<Path>  pathLists  = new ArrayList<Path>();
     private List<Paint> paintLists = new ArrayList<Paint>();
-
-    private final Paint emptyPaint = new Paint();
 
     // for Eraser
     private int baseColor = Color.WHITE;
@@ -98,7 +91,7 @@ public class CanvasView extends View {
 
     /**
      * Copy Constructor
-     * 
+     *
      * @param context
      * @param attrs
      * @param defStyle
@@ -110,7 +103,7 @@ public class CanvasView extends View {
 
     /**
      * Copy Constructor
-     * 
+     *
      * @param context
      * @param attrs
      */
@@ -121,7 +114,7 @@ public class CanvasView extends View {
 
     /**
      * Copy Constructor
-     * 
+     *
      * @param context
      */
     public CanvasView(Context context) {
@@ -131,7 +124,7 @@ public class CanvasView extends View {
 
     /**
      * Common initialization.
-     * 
+     *
      * @param context
      */
     private void setup(Context context) {
@@ -147,7 +140,7 @@ public class CanvasView extends View {
     /**
      * This method creates the instance of Paint.
      * In addition, this method sets styles for Paint.
-     * 
+     *
      * @return paint This is returned as the instance of Paint
      */
     private Paint createPaint() {
@@ -188,7 +181,7 @@ public class CanvasView extends View {
      * This method initialize Path.
      * Namely, this method creates the instance of Path,
      * and moves current position.
-     * 
+     *
      * @param event This is argument of onTouchEvent method
      * @return path This is returned as the instance of Path
      */
@@ -207,9 +200,8 @@ public class CanvasView extends View {
     /**
      * This method updates the lists for the instance of Path and Paint.
      * "Undo" and "Redo" are enabled by this method.
-     * 
+     *
      * @param path the instance of Path
-     * @param paint the instance of Paint
      */
     private void updateHistory(Path path) {
         if (this.historyPointer == this.pathLists.size()) {
@@ -231,7 +223,7 @@ public class CanvasView extends View {
 
     /**
      * This method gets the instance of Path that pointer indicates.
-     * 
+     *
      * @return the instance of Path
      */
     private Path getCurrentPath() {
@@ -240,7 +232,7 @@ public class CanvasView extends View {
 
     /**
      * This method draws text.
-     * 
+     *
      * @param canvas the instance of Canvas
      */
     private void drawText(Canvas canvas) {
@@ -285,7 +277,7 @@ public class CanvasView extends View {
 
     /**
      * This method defines processes on MotionEvent.ACTION_DOWN
-     * 
+     *
      * @param event This is argument of onTouchEvent method
      */
     private void onActionDown(MotionEvent event) {
@@ -323,7 +315,7 @@ public class CanvasView extends View {
 
     /**
      * This method defines processes on MotionEvent.ACTION_MOVE
-     * 
+     *
      * @param event This is argument of onTouchEvent method
      */
     private void onActionMove(MotionEvent event) {
@@ -354,9 +346,53 @@ public class CanvasView extends View {
                             path.reset();
                             path.addRect(this.startX, this.startY, x, y, Path.Direction.CCW);
                             break;
+                        case ARROW :
+                            path.reset();
+
+                            Paint paint = new Paint();
+                            paint.setStyle(Paint.Style.FILL);
+                            float x0 = this.startX;
+                            float y0 = this.startY;
+                            float x1 = x;
+                            float y1 = y;
+                            float deltaX = x1 - x0;
+                            float deltaY = y1 - y0;
+                            double distance = Math.sqrt((deltaX * deltaX) + (deltaY * deltaY));
+                            float frac = (float) (1 / (distance / 30));
+
+                            float point_x_1 = x0 + (float) ((1 - frac) * deltaX + frac * deltaY);
+                            float point_y_1 = y0 + (float) ((1 - frac) * deltaY - frac * deltaX);
+
+                            float point_x_2 = x1;
+                            float point_y_2 = y1;
+
+                            float point_x_3 = x0 + (float) ((1 - frac) * deltaX - frac * deltaY);
+                            float point_y_3 = y0 + (float) ((1 - frac) * deltaY + frac * deltaX);
+
+                            float midOfArrow_x = (point_x_1 + point_x_3) / 2;
+                            float midOfArrow_y = (point_y_1 + point_y_3) / 2;
+
+
+                            path.setFillType(Path.FillType.EVEN_ODD);
+
+                            path.moveTo(point_x_1, point_y_1);
+                            path.lineTo(point_x_2, point_y_2);
+                            path.lineTo(point_x_3, point_y_3);
+                            path.lineTo(point_x_1, point_y_1);
+                            path.lineTo(point_x_1, point_y_1);
+
+                            path.moveTo(x0, y0);
+                            path.lineTo(midOfArrow_x, midOfArrow_y);
+
+
+                            path.close();
+
+                            canvas.drawPath(path, paint);
+
+                            break;
                         case CIRCLE :
                             double distanceX = Math.abs((double)(this.startX - x));
-                            double distanceY = Math.abs((double)(this.startX - y));
+                            double distanceY = Math.abs((double)(this.startY - y));
                             double radius    = Math.sqrt(Math.pow(distanceX, 2.0) + Math.pow(distanceY, 2.0));
 
                             path.reset();
@@ -396,7 +432,7 @@ public class CanvasView extends View {
 
     /**
      * This method defines processes on MotionEvent.ACTION_DOWN
-     * 
+     *
      * @param event This is argument of onTouchEvent method
      */
     private void onActionUp(MotionEvent event) {
@@ -409,7 +445,7 @@ public class CanvasView extends View {
 
     /**
      * This method updates the instance of Canvas (View)
-     * 
+     *
      * @param canvas the new instance of Canvas
      */
     @Override
@@ -420,7 +456,7 @@ public class CanvasView extends View {
         canvas.drawColor(this.baseColor);
 
         if (this.bitmap != null) {
-            canvas.drawBitmap(this.bitmap, 0F, 0F, emptyPaint);
+            canvas.drawBitmap(this.bitmap, 0F, 0F, new Paint());
         }
 
         for (int i = 0; i < this.historyPointer; i++) {
@@ -437,12 +473,13 @@ public class CanvasView extends View {
 
     /**
      * This method set event listener for drawing.
-     * 
+     *
      * @param event the instance of MotionEvent
      * @return
      */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 this.onActionDown(event);
@@ -465,7 +502,7 @@ public class CanvasView extends View {
 
     /**
      * This method is getter for mode.
-     * 
+     *
      * @return
      */
     public Mode getMode() {
@@ -474,7 +511,7 @@ public class CanvasView extends View {
 
     /**
      * This method is setter for mode.
-     * 
+     *
      * @param mode
      */
     public void setMode(Mode mode) {
@@ -483,7 +520,7 @@ public class CanvasView extends View {
 
     /**
      * This method is getter for drawer.
-     * 
+     *
      * @return
      */
     public Drawer getDrawer() {
@@ -492,7 +529,7 @@ public class CanvasView extends View {
 
     /**
      * This method is setter for drawer.
-     * 
+     *
      * @param drawer
      */
     public void setDrawer(Drawer drawer) {
@@ -501,7 +538,7 @@ public class CanvasView extends View {
 
     /**
      * This method draws canvas again for Undo.
-     * 
+     *
      * @return If Undo is enabled, this is returned as true. Otherwise, this is returned as false.
      */
     public boolean undo() {
@@ -517,7 +554,7 @@ public class CanvasView extends View {
 
     /**
      * This method draws canvas again for Redo.
-     * 
+     *
      * @return If Redo is enabled, this is returned as true. Otherwise, this is returned as false.
      */
     public boolean redo() {
@@ -533,7 +570,7 @@ public class CanvasView extends View {
 
     /**
      * This method initializes canvas.
-     * 
+     *
      * @return
      */
     public void clear() {
@@ -570,7 +607,7 @@ public class CanvasView extends View {
 
     /**
      * This method is getter for canvas background color
-     * 
+     *
      * @return
      */
     public int getBaseColor() {
@@ -579,7 +616,7 @@ public class CanvasView extends View {
 
     /**
      * This method is setter for canvas background color
-     * 
+     *
      * @param color
      */
     public void setBaseColor(int color) {
@@ -588,7 +625,7 @@ public class CanvasView extends View {
 
     /**
      * This method is getter for drawn text.
-     * 
+     *
      * @return
      */
     public String getText() {
@@ -597,7 +634,7 @@ public class CanvasView extends View {
 
     /**
      * This method is setter for drawn text.
-     * 
+     *
      * @param text
      */
     public void setText(String text) {
@@ -606,7 +643,7 @@ public class CanvasView extends View {
 
     /**
      * This method is getter for stroke or fill.
-     * 
+     *
      * @return
      */
     public Paint.Style getPaintStyle() {
@@ -615,7 +652,7 @@ public class CanvasView extends View {
 
     /**
      * This method is setter for stroke or fill.
-     * 
+     *
      * @param style
      */
     public void setPaintStyle(Paint.Style style) {
@@ -624,7 +661,7 @@ public class CanvasView extends View {
 
     /**
      * This method is getter for stroke color.
-     * 
+     *
      * @return
      */
     public int getPaintStrokeColor() {
@@ -633,7 +670,7 @@ public class CanvasView extends View {
 
     /**
      * This method is setter for stroke color.
-     * 
+     *
      * @param color
      */
     public void setPaintStrokeColor(int color) {
@@ -643,17 +680,17 @@ public class CanvasView extends View {
     /**
      * This method is getter for fill color.
      * But, current Android API cannot set fill color (?).
-     * 
+     *
      * @return
      */
     public int getPaintFillColor() {
-        return this.paintFillColor; 
+        return this.paintFillColor;
     };
 
     /**
      * This method is setter for fill color.
      * But, current Android API cannot set fill color (?).
-     * 
+     *
      * @param color
      */
     public void setPaintFillColor(int color) {
@@ -662,7 +699,7 @@ public class CanvasView extends View {
 
     /**
      * This method is getter for stroke width.
-     * 
+     *
      * @return
      */
     public float getPaintStrokeWidth() {
@@ -671,7 +708,7 @@ public class CanvasView extends View {
 
     /**
      * This method is setter for stroke width.
-     * 
+     *
      * @param width
      */
     public void setPaintStrokeWidth(float width) {
@@ -684,7 +721,7 @@ public class CanvasView extends View {
 
     /**
      * This method is getter for alpha.
-     * 
+     *
      * @return
      */
     public int getOpacity() {
@@ -694,7 +731,7 @@ public class CanvasView extends View {
     /**
      * This method is setter for alpha.
      * The 1st argument must be between 0 and 255.
-     * 
+     *
      * @param opacity
      */
     public void setOpacity(int opacity) {
@@ -707,7 +744,7 @@ public class CanvasView extends View {
 
     /**
      * This method is getter for amount of blur.
-     * 
+     *
      * @return
      */
     public float getBlur() {
@@ -717,7 +754,7 @@ public class CanvasView extends View {
     /**
      * This method is setter for amount of blur.
      * The 1st argument is greater than or equal to 0.0.
-     * 
+     *
      * @param blur
      */
     public void setBlur(float blur) {
@@ -730,7 +767,7 @@ public class CanvasView extends View {
 
     /**
      * This method is getter for line cap.
-     * 
+     *
      * @return
      */
     public Paint.Cap getLineCap() {
@@ -739,7 +776,7 @@ public class CanvasView extends View {
 
     /**
      * This method is setter for line cap.
-     * 
+     *
      * @param cap
      */
     public void setLineCap(Paint.Cap cap) {
@@ -748,7 +785,7 @@ public class CanvasView extends View {
 
     /**
      * This method is getter for font size,
-     * 
+     *
      * @return
      */
     public float getFontSize() {
@@ -758,7 +795,7 @@ public class CanvasView extends View {
     /**
      * This method is setter for font size.
      * The 1st argument is greater than or equal to 0.0.
-     * 
+     *
      * @param size
      */
     public void setFontSize(float size) {
@@ -771,7 +808,7 @@ public class CanvasView extends View {
 
     /**
      * This method is getter for font-family.
-     * 
+     *
      * @return
      */
     public Typeface getFontFamily() {
@@ -780,7 +817,7 @@ public class CanvasView extends View {
 
     /**
      * This method is setter for font-family.
-     * 
+     *
      * @param face
      */
     public void setFontFamily(Typeface face) {
@@ -789,7 +826,7 @@ public class CanvasView extends View {
 
     /**
      * This method gets current canvas as bitmap.
-     * 
+     *
      * @return This is returned as bitmap.
      */
     public Bitmap getBitmap() {
@@ -801,7 +838,7 @@ public class CanvasView extends View {
 
     /**
      * This method gets current canvas as scaled bitmap.
-     * 
+     *
      * @return This is returned as scaled bitmap.
      */
     public Bitmap getScaleBitmap(int w, int h) {
@@ -813,7 +850,7 @@ public class CanvasView extends View {
 
     /**
      * This method draws the designated bitmap to canvas.
-     * 
+     *
      * @param bitmap
      */
     public void drawBitmap(Bitmap bitmap) {
@@ -823,7 +860,7 @@ public class CanvasView extends View {
 
     /**
      * This method draws the designated byte array of bitmap to canvas.
-     * 
+     *
      * @param byteArray This is returned as byte array of bitmap.
      */
     public void drawBitmap(byte[] byteArray) {
@@ -832,7 +869,7 @@ public class CanvasView extends View {
 
     /**
      * This static method gets the designated bitmap as byte array.
-     * 
+     *
      * @param bitmap
      * @param format
      * @param quality
@@ -847,7 +884,7 @@ public class CanvasView extends View {
 
     /**
      * This method gets the bitmap as byte array.
-     * 
+     *
      * @param format
      * @param quality
      * @return This is returned as byte array of bitmap.
@@ -862,7 +899,7 @@ public class CanvasView extends View {
     /**
      * This method gets the bitmap as byte array.
      * Bitmap format is PNG, and quality is 100.
-     * 
+     *
      * @return This is returned as byte array of bitmap.
      */
     public byte[] getBitmapAsByteArray() {
