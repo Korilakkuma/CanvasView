@@ -89,6 +89,9 @@ public class CanvasView extends View {
     private float controlX = 0F;
     private float controlY = 0F;
 
+    // for ColorPicker
+    private ColorPickerDialog.OnColorChangedListener color_picker_listener;
+
     /**
      * Copy Constructor
      *
@@ -906,4 +909,27 @@ public class CanvasView extends View {
         return this.getBitmapAsByteArray(CompressFormat.PNG, 100);
     }
 
+    /**
+     * This method open a color picker for select your color.
+     */
+    public void showColorPicker() {
+        new ColorPickerDialog(this.context, new ColorPickerDialog.OnColorChangedListener() {
+            @Override
+            public void colorChanged(int color) {
+                setPaintStrokeColor(color);
+
+                if(color_picker_listener != null) {
+                    color_picker_listener.colorChanged(color);
+                }
+            }
+        }, getPaintStrokeColor()).show();
+    }
+
+    /**
+     * This method set a listener for your color is changed.
+     * @param color_picker_listener
+     */
+    public void setOnColorChangedListener(ColorPickerDialog.OnColorChangedListener color_picker_listener) {
+        this.color_picker_listener = color_picker_listener;
+    }
 }
