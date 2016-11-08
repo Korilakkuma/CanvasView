@@ -81,6 +81,7 @@ This libarary enable to draw Figures.
     this.canvas.setDrawer(CanvasView.Drawer.CIRCLE);            // Draw Circle
     this.canvas.setDrawer(CanvasView.Drawer.ELLIPSE);           // Draw Ellipse (Oval)
     this.canvas.setDrawer(CanvasView.Drawer.QUADRATIC_BEZIER);  // Draw Quadratic Bezier
+    this.canvas.setDrawer(CanvasView.Drawer.ARROW);             // Draw Arrow
 
     // Getter
     CanvasView.Drawer drawer = this.canvas.getDrawer();
@@ -92,6 +93,20 @@ This libarary enable to draw Figures.
 
     // Getter
     int backgroundColor = this.canvas.getBaseColor();
+    
+    
+### Object color
+  
+    // Setter
+    this.canvas.showColorPicker();
+
+    // Listener
+    this.canvas.setOnColorChangedListener(new ColorPickerDialog.OnColorChangedListener() {
+        @Override
+        public void colorChanged(int color) {
+            Log.i("Color Changed!", color);
+        }
+    });
   
 ### Stroke Style
   
