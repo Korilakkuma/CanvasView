@@ -500,12 +500,30 @@ public class CanvasView extends View {
     }
 
     /**
+     * This method checks if Undo is available
+     *
+     * @return If Undo is available, this is returned as true. Otherwise, this is returned as false.
+     */
+    public boolean canUndo() {
+        return this.historyPointer > 1;
+    }
+
+    /**
+     * This method checks if Redo is available
+     *
+     * @return If Redo is available, this is returned as true. Otherwise, this is returned as false.
+     */
+    public boolean canRedo() {
+        return this.historyPointer < this.pathLists.size();
+    }
+
+    /**
      * This method draws canvas again for Undo.
      * 
      * @return If Undo is enabled, this is returned as true. Otherwise, this is returned as false.
      */
     public boolean undo() {
-        if (this.historyPointer > 1) {
+        if (canUndo()) {
             this.historyPointer--;
             this.invalidate();
 
@@ -521,7 +539,7 @@ public class CanvasView extends View {
      * @return If Redo is enabled, this is returned as true. Otherwise, this is returned as false.
      */
     public boolean redo() {
-        if (this.historyPointer < this.pathLists.size()) {
+        if (canRedo()) {
             this.historyPointer++;
             this.invalidate();
 
