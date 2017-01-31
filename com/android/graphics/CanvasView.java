@@ -5,29 +5,17 @@
  * Released under the MIT license
  */
 
-package com.android.graphics;
-
-import java.io.ByteArrayOutputStream;
-import java.util.List;
-import java.util.ArrayList;
+package android.graphics;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.RectF;
-import android.graphics.Typeface;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.PorterDuff;
-import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
-import android.graphics.BitmapFactory;
 import android.util.AttributeSet;
-import android.view.View;
 import android.view.MotionEvent;
-// import android.util.Log;
-// import android.widget.Toast;
+import android.view.View;
+
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class defines fields and methods for drawing.
@@ -52,7 +40,6 @@ public class CanvasView extends View {
         QUBIC_BEZIER;
     }
 
-    private Context context = null;
     private Canvas canvas   = null;
     private Bitmap bitmap   = null;
 
@@ -106,7 +93,7 @@ public class CanvasView extends View {
      */
     public CanvasView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        this.setup(context);
+        this.setup();
     }
 
     /**
@@ -117,7 +104,7 @@ public class CanvasView extends View {
      */
     public CanvasView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.setup(context);
+        this.setup();
     }
 
     /**
@@ -127,16 +114,14 @@ public class CanvasView extends View {
      */
     public CanvasView(Context context) {
         super(context);
-        this.setup(context);
+        this.setup();
     }
 
     /**
      * Common initialization.
-     * 
-     * @param context
+     *
      */
-    private void setup(Context context) {
-        this.context = context;
+    private void setup() {
 
         this.pathLists.add(new Path());
         this.paintLists.add(this.createPaint());
@@ -211,7 +196,6 @@ public class CanvasView extends View {
      * "Undo" and "Redo" are enabled by this method.
      * 
      * @param path the instance of Path
-     * @param paint the instance of Paint
      */
     private void updateHistory(Path path) {
         if (this.historyPointer == this.pathLists.size()) {
