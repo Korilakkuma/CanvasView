@@ -22,7 +22,7 @@ android {
     }
     sourceSets {
         main {
-            java.srcDirs = ['com']
+            java.srcDirs = ['src']
             manifest.srcFile 'AndroidManifest.xml'
         }
     }
