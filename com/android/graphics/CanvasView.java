@@ -73,13 +73,14 @@ public class CanvasView extends View {
     private boolean isDown = false;
 
     // for Paint
-    private Paint.Style paintStyle = Paint.Style.STROKE;
-    private int paintStrokeColor   = Color.BLACK;
-    private int paintFillColor     = Color.BLACK;
-    private float paintStrokeWidth = 3F;
-    private int opacity            = 255;
-    private float blur             = 0F;
-    private Paint.Cap lineCap      = Paint.Cap.ROUND;
+    private Paint.Style paintStyle    = Paint.Style.STROKE;
+    private int paintStrokeColor      = Color.BLACK;
+    private int paintFillColor        = Color.BLACK;
+    private float paintStrokeWidth    = 3F;
+    private int opacity               = 255;
+    private float blur                = 0F;
+    private Paint.Cap lineCap         = Paint.Cap.ROUND;
+    private PathEffect drawPathEffect = null;
 
     // for Text
     private String text           = "";
@@ -179,6 +180,7 @@ public class CanvasView extends View {
             paint.setColor(this.paintStrokeColor);
             paint.setShadowLayer(this.blur, 0F, 0F, this.paintStrokeColor);
             paint.setAlpha(this.opacity);
+            paint.setPathEffect(this.drawPathEffect);
         }
 
         return paint;
@@ -770,6 +772,23 @@ public class CanvasView extends View {
         this.lineCap = cap;
     }
 
+    /**
+     * This method is getter for path effect of drawing.
+     *
+     * @return drawPathEffect
+     */
+    public PathEffect getDrawPathEffect() {
+        return drawPathEffect;
+    }
+
+    /**
+     * This method is setter for path effect of drawing.
+     *
+     * @param drawPathEffect
+     */
+    public void setDrawPathEffect(PathEffect drawPathEffect) {
+        this.drawPathEffect = drawPathEffect;
+    }
     /**
      * This method is getter for font size,
      * 
