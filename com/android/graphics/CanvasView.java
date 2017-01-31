@@ -352,7 +352,13 @@ public class CanvasView extends View {
                             break;
                         case RECTANGLE :
                             path.reset();
-                            path.addRect(this.startX, this.startY, x, y, Path.Direction.CCW);
+
+                            float left   = Math.min(this.startX, x);
+                            float right  = Math.max(this.startX, x);
+                            float top    = Math.min(this.startY, y);
+                            float bottom = Math.max(this.startY, y);
+
+                            path.addRect(left, top, right, bottom, Path.Direction.CCW);
                             break;
                         case CIRCLE :
                             double distanceX = Math.abs((double)(this.startX - x));
