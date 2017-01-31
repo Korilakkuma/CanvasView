@@ -1,3 +1,5 @@
+[![](https://jitpack.io/v/infotech-group/CanvasView.svg)](https://jitpack.io/#infotech-group/CanvasView)
+
 CanvasView
 =========
   
