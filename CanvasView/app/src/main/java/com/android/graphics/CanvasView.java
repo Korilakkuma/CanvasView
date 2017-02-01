@@ -7,27 +7,26 @@
 
 package com.android.graphics;
 
-import java.io.ByteArrayOutputStream;
-import java.util.List;
-import java.util.ArrayList;
-
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PathEffect;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.graphics.Typeface;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.PorterDuff;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
-import android.graphics.BitmapFactory;
 import android.util.AttributeSet;
-import android.view.View;
 import android.view.MotionEvent;
-// import android.util.Log;
-// import android.widget.Toast;
+import android.view.View;
+
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class defines fields and methods for drawing.
@@ -52,12 +51,13 @@ public class CanvasView extends View {
         QUBIC_BEZIER;
     }
 
-    private Context context = null;
     private Canvas canvas   = null;
     private Bitmap bitmap   = null;
 
     private List<Path>  pathLists  = new ArrayList<Path>();
     private List<Paint> paintLists = new ArrayList<Paint>();
+
+    private final Paint emptyPaint = new Paint();
 
     // for Eraser
     private int baseColor = Color.WHITE;
@@ -71,13 +71,14 @@ public class CanvasView extends View {
     private boolean isDown = false;
 
     // for Paint
-    private Paint.Style paintStyle = Paint.Style.STROKE;
-    private int paintStrokeColor   = Color.BLACK;
-    private int paintFillColor     = Color.BLACK;
-    private float paintStrokeWidth = 3F;
-    private int opacity            = 255;
-    private float blur             = 0F;
-    private Paint.Cap lineCap      = Paint.Cap.ROUND;
+    private Paint.Style paintStyle    = Paint.Style.STROKE;
+    private int paintStrokeColor      = Color.BLACK;
+    private int paintFillColor        = Color.BLACK;
+    private float paintStrokeWidth    = 3F;
+    private int opacity               = 255;
+    private float blur                = 0F;
+    private Paint.Cap lineCap         = Paint.Cap.ROUND;
+    private PathEffect drawPathEffect = null;
 
     // for Text
     private String text           = "";
@@ -103,7 +104,7 @@ public class CanvasView extends View {
      */
     public CanvasView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        this.setup(context);
+        this.setup();
     }
 
     /**
@@ -114,7 +115,7 @@ public class CanvasView extends View {
      */
     public CanvasView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.setup(context);
+        this.setup();
     }
 
     /**
@@ -124,16 +125,14 @@ public class CanvasView extends View {
      */
     public CanvasView(Context context) {
         super(context);
-        this.setup(context);
+        this.setup();
     }
 
     /**
      * Common initialization.
      *
-     * @param context
      */
-    private void setup(Context context) {
-        this.context = context;
+    private void setup() {
 
         this.pathLists.add(new Path());
         this.paintLists.add(this.createPaint());
@@ -177,6 +176,7 @@ public class CanvasView extends View {
             paint.setColor(this.paintStrokeColor);
             paint.setShadowLayer(this.blur, 0F, 0F, this.paintStrokeColor);
             paint.setAlpha(this.opacity);
+            paint.setPathEffect(this.drawPathEffect);
         }
 
         return paint;
@@ -207,7 +207,6 @@ public class CanvasView extends View {
      * "Undo" and "Redo" are enabled by this method.
      *
      * @param path the instance of Path
-     * @param paint the instance of Paint
      */
     private void updateHistory(Path path) {
         if (this.historyPointer == this.pathLists.size()) {
@@ -350,7 +349,13 @@ public class CanvasView extends View {
                             break;
                         case RECTANGLE :
                             path.reset();
-                            path.addRect(this.startX, this.startY, x, y, Path.Direction.CCW);
+
+                            float left   = Math.min(this.startX, x);
+                            float right  = Math.max(this.startX, x);
+                            float top    = Math.min(this.startY, y);
+                            float bottom = Math.max(this.startY, y);
+
+                            path.addRect(left, top, right, bottom, Path.Direction.CCW);
                             break;
                         case CIRCLE :
                             double distanceX = Math.abs((double)(this.startX - x));
@@ -418,7 +423,7 @@ public class CanvasView extends View {
         canvas.drawColor(this.baseColor);
 
         if (this.bitmap != null) {
-            canvas.drawBitmap(this.bitmap, 0F, 0F, new Paint());
+            canvas.drawBitmap(this.bitmap, 0F, 0F, emptyPaint);
         }
 
         for (int i = 0; i < this.historyPointer; i++) {
@@ -498,12 +503,30 @@ public class CanvasView extends View {
     }
 
     /**
+     * This method checks if Undo is available
+     *
+     * @return If Undo is available, this is returned as true. Otherwise, this is returned as false.
+     */
+    public boolean canUndo() {
+        return this.historyPointer > 1;
+    }
+
+    /**
+     * This method checks if Redo is available
+     *
+     * @return If Redo is available, this is returned as true. Otherwise, this is returned as false.
+     */
+    public boolean canRedo() {
+        return this.historyPointer < this.pathLists.size();
+    }
+
+    /**
      * This method draws canvas again for Undo.
      *
      * @return If Undo is enabled, this is returned as true. Otherwise, this is returned as false.
      */
     public boolean undo() {
-        if (this.historyPointer > 1) {
+        if (canUndo()) {
             this.historyPointer--;
             this.invalidate();
 
@@ -519,7 +542,7 @@ public class CanvasView extends View {
      * @return If Redo is enabled, this is returned as true. Otherwise, this is returned as false.
      */
     public boolean redo() {
-        if (this.historyPointer < this.pathLists.size()) {
+        if (canRedo()) {
             this.historyPointer++;
             this.invalidate();
 
@@ -744,6 +767,23 @@ public class CanvasView extends View {
         this.lineCap = cap;
     }
 
+    /**
+     * This method is getter for path effect of drawing.
+     *
+     * @return drawPathEffect
+     */
+    public PathEffect getDrawPathEffect() {
+        return drawPathEffect;
+    }
+
+    /**
+     * This method is setter for path effect of drawing.
+     *
+     * @param drawPathEffect
+     */
+    public void setDrawPathEffect(PathEffect drawPathEffect) {
+        this.drawPathEffect = drawPathEffect;
+    }
     /**
      * This method is getter for font size,
      *
