@@ -560,11 +560,12 @@ public class CanvasView extends View {
     public void clear() {
         Path path = new Path();
         path.moveTo(0F, 0F);
-        path.addRect(0F, 0F, 1000F, 1000F, Path.Direction.CCW);
+        path.addRect(0F, 0F, getMeasuredWidth(), getMeasuredHeight(), Path.Direction.CCW);
         path.close();
 
         Paint paint = new Paint();
-        paint.setColor(Color.WHITE);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+        paint.setARGB(0, 0, 0, 0);
         paint.setStyle(Paint.Style.FILL);
 
         if (this.historyPointer == this.pathLists.size()) {
