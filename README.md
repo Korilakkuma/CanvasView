@@ -1,5 +1,5 @@
-[![](https://jitpack.io/v/infotech-group/CanvasView.svg)](https://jitpack.io/#infotech-group/CanvasView)
-[![Build Status](https://travis-ci.org/infotech-group/CanvasView.svg?branch=master)](https://travis-ci.org/infotech-group/CanvasView)
+[![](https://jitpack.io/v/Korilakkuma/CanvasView.svg)](https://jitpack.io/#Korilakkuma/CanvasView)
+[![Build Status](https://travis-ci.org/Korilakkuma/CanvasView.svg?branch=master)](https://travis-ci.org/Korilakkuma/CanvasView)
 
 CanvasView
 =========
