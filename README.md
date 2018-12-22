@@ -1,3 +1,6 @@
+[![](https://jitpack.io/v/infotech-group/CanvasView.svg)](https://jitpack.io/#infotech-group/CanvasView)
+[![Build Status](https://travis-ci.org/infotech-group/CanvasView.svg?branch=master)](https://travis-ci.org/infotech-group/CanvasView)
+
 CanvasView
 =========
   
@@ -93,8 +96,7 @@ This libarary enable to draw Figures.
 
     // Getter
     int backgroundColor = this.canvas.getBaseColor();
-    
-    
+
 ### Object color
   
     // Setter
@@ -148,7 +150,8 @@ This libarary enable to draw Figures.
     this.canvas.setBlur(5F);  // greater than or equal to 0
 
     // Getter
-    float blur = this.canvas.getBlur();
+
+float blur = this.canvas.getBlur();
   
 ### Line Cap
   
